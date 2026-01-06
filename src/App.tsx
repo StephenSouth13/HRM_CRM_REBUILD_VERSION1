@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Attendance from "./pages/Attendance";
 import Tasks from "./pages/Tasks";
 import MeetingRooms from "./pages/MeetingRooms";
+import Messages from "./pages/Messages";
 import Organization from "./pages/Organization";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/attendance" element={<Attendance />} />
           <Route path="/tasks" element={<Tasks />} />
+          <Route path="/messages" element={<Messages />} />
           <Route path="/meeting-rooms" element={<MeetingRooms />} />
           <Route path="/salary" element={<Salary />} />
           <Route path="/leave" element={<Navigate to="/attendance" replace />} />

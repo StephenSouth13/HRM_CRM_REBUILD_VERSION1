@@ -50,9 +50,18 @@ const LeaveRequestForm = () => {
           }
         }
 
+        // Load only leaders/admins as possible approvers
+        const { data: rolesData } = await supabase
+          .from('user_roles')
+          .select('user_id, role')
+          .in('role', ['leader', 'admin']);
+
+        const leaderIds = new Set((rolesData || []).map((r: any) => r.user_id));
+
         const { data: profileData } = await supabase
           .from('profiles')
           .select('id, first_name, last_name')
+          .in('id', Array.from(leaderIds))
           .order('first_name');
 
         if (profileData) {

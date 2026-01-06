@@ -1,388 +1,79 @@
-<div align="center">
-  
-# 🍇 Vine CRM
+Dưới đây là danh sách tất cả file SQL trong workspace (các folder migrations và migrations) đã được kiểm tra, cùng thứ tự nhập vào SQL editor và tiêu đề mô tả chức năng từng file. Chạy theo thứ tự này (1 → N). Trước khi chạy: sao lưu database, chạy ở môi trường dev hoặc staging trước, và đảm bảo bucket storage message-attachments đã được tạo nếu bạn áp dụng migration attachments.
 
-### Enterprise Resource Management Platform
-
-*Modern, Powerful, and Intelligent CRM System for Internal Business Operations*
-
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-
-[🚀 Demo](https://lovable.dev/projects/f69f86c8-a387-4d19-b189-642e8f36a015) • [📖 Documentation](#) • [🐛 Report Bug](#) • [✨ Request Feature](#)
-
-</div>
-
----
-
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Database Schema](#-database-schema)
-- [Role-Based Access](#-role-based-access)
-- [Getting Started](#-getting-started)
-- [Environment Setup](#-environment-setup)
-- [Development](#-development)
-- [Deployment](#-deployment)
-- [Contributing](#-contributing)
-- [License](#-license)
-
----
-
-## 🎯 Overview
-
-**Vine CRM** is a comprehensive Enterprise Resource Management platform designed to streamline internal business operations. Built with modern technologies and focused on real-world data handling, it provides a centralized solution for:
-
-- 👥 **Organization Management** - Teams, departments, and user hierarchy
-- ⏰ **Attendance Tracking** - Real-time check-in/check-out with shift management
-- 📋 **Task Management** - Kanban-style workflow with team collaboration
-- 🏢 **Meeting Room Booking** - Smart scheduling and resource allocation
-- 🌴 **Leave Management** - Automated approval workflow
-- 📊 **Analytics Dashboard** - Role-based insights and reporting
-
-> 💡 **Note:** This system uses **real data** (no mockups), supports **dark mode**, features **multi-role user management**, and includes an **AI-powered account seeder**.
-
----
-
-## ✨ Key Features
-
-### 🎨 **Modern User Interface**
-- Beautiful, responsive design with TailwindCSS + shadcn/ui
-- Full dark mode support with smooth transitions
-- Framer Motion animations for delightful UX
-- Mobile-first approach
-
-### 🔐 **Advanced Security**
-- Row-Level Security (RLS) on all database tables
-- JWT-based authentication via Supabase Auth
-- Audit logging for all critical operations
-- Role-based access control (RBAC)
-
-### 📊 **Role-Based Dashboards**
-
-#### 🧑‍💼 Admin Dashboard
-- Company-wide analytics and metrics
-- User and team management
-- System configuration and audit logs
-- Unassigned tasks and overdue items
-
-#### 👨‍🏫 Leader Dashboard
-- Team attendance overview
-- Task progress tracking
-- Leave request approvals
-- Team performance metrics
-
-#### 👩‍💻 Staff Dashboard
-- Personal attendance records
-- Assigned tasks and deadlines
-- Leave balance and requests
-- Personal meeting schedule
-
-### 🤖 **AI-Powered Features**
-- **Smart Account Seeder**: Bulk user creation via CSV upload
-- Automated email notifications
-- Intelligent task assignment suggestions (planned)
-- Performance analytics (planned)
-
-### ⚡ **Real-Time Updates**
-- Live attendance tracking with Supabase Realtime
-- Instant task status updates
-- Real-time meeting room availability
-- Push notifications for approvals
-
----
-
-## 🛠 Tech Stack
-
-### **Frontend**
-| Technology | Purpose |
-|-----------|---------|
-| **React 18** | UI library with hooks |
-| **TypeScript** | Type-safe development |
-| **Vite** | Lightning-fast build tool |
-| **TailwindCSS** | Utility-first CSS framework |
-| **shadcn/ui** | Beautiful component library |
-| **Framer Motion** | Smooth animations |
-| **Tanstack Query** | Server state management |
-| **Zustand** | Client state management |
-
-### **Backend**
-| Technology | Purpose |
-|-----------|---------|
-| **Supabase** | PostgreSQL database & Auth |
-| **Golang** | API service layer |
-| **Supabase Storage** | File storage (avatars, attachments) |
-| **Redis** | Queue management (optional) |
-
-### **Deployment**
-- **Frontend**: Vercel / Lovable
-- **Backend**: Fly.io / Railway
-- **Database**: Supabase Cloud
-- **CDN**: Cloudflare (optional)
-
----
-
-## 📁 Project Structure
-
-```
-vine-crm/
-├── src/
-│   ├── components/         # Reusable UI components
-│   │   ├── ui/            # shadcn/ui components
-│   │   ├── dashboard/     # Dashboard widgets
-│   │   ├── attendance/    # Check-in/out components
-│   │   ├── tasks/         # Task management UI
-│   │   └── meetings/      # Meeting room booking
-│   ├── pages/             # Route pages
-│   │   ├── Index.tsx      # Landing/Dashboard
-│   │   ├── auth/          # Authentication pages
-│   │   ├── tasks/         # Task management
-│   │   ├── attendance/    # Attendance tracking
-│   │   ├── meetings/      # Meeting rooms
-│   │   └── leaves/        # Leave management
-│   ├── hooks/             # Custom React hooks
-│   ├── lib/               # Utility functions
-│   ├── integrations/      # Supabase client & types
-│   │   └── supabase/
-│   ├── types/             # TypeScript definitions
-│   └── index.css          # Global styles & design tokens
-├── supabase/
-│   ├── migrations/        # Database migrations
-│   ├── functions/         # Edge functions
-│   └── config.toml        # Supabase config
-├── public/                # Static assets
-└── README.md
-```
-
----
-
-## 🗄️ Database Schema
-
-### **Core Tables**
-
-| Table | Description |
-|-------|-------------|
-| `users` | User profiles (id, email, role, team_id, shift_id, avatar) |
-| `teams` | Departments and teams (id, name, leader_id) |
-| `shifts` | Work shifts (id, name, start_time, end_time) |
-| `attendance` | Check-in/out logs (user_id, timestamp, location, type) |
-| `tasks` | Work items (id, title, assignee_id, creator_id, deadline, status) |
-| `meeting_rooms` | Conference rooms (id, name, location, capacity, equipment) |
-| `room_bookings` | Meeting reservations (room_id, user_id, start_time, end_time, status) |
-| `leave_requests` | Time-off requests (user_id, type, start_date, end_date, status, approver_id) |
-| `audit_logs` | System activity logs (user_id, action, entity, timestamp) |
-
-> All tables implement **Row-Level Security (RLS)** for data protection.
-
----
-
-## 👥 Role-Based Access
-
-| Feature | Admin | Leader | Staff |
-|---------|-------|--------|-------|
-| **Organization Management** | ✅ Full CRUD | 👁️ View team only | 🔒 Personal view only |
-| **Attendance Tracking** | ✅ All records | ✅ Team records | ✅ Self only |
-| **Task Management** | ✅ Full control | ✅ Create, assign, approve | ✅ Create & report |
-| **Meeting Rooms** | ✅ Manage rooms | ✅ Approve bookings | ✅ Book only |
-| **Leave Management** | ✅ Approve all | ✅ Approve team | ✅ Request only |
-| **System Settings** | ✅ | 🔒 | 🔒 |
-
----
-
-## 🚀 Getting Started
-
-### **Prerequisites**
-
-- Node.js 18+ and npm
-- Supabase account
-- Git
-
-### **Installation**
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/vine-crm.git
-   cd vine-crm
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Update `.env` with your Supabase credentials:
-   ```env
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_PUBLISHABLE_KEY=your_anon_key
-   VITE_SUPABASE_PROJECT_ID=your_project_id
-   ```
-
-4. **Run database migrations**
-   ```bash
-   npx supabase db push
-   ```
-
-5. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Open your browser**
-   ```
-   http://localhost:8080
-   ```
+20250101000000_enhance_hrm_system.sql
 
----
+Tên phần: Core HRM enhancements (leave types, attendance settings, room booking constraints, profile approval, team leader)
+Mô tả: Tạo bảng leave_types, attendance_settings, thêm cột/constraint cho leave_requests, room_bookings, profiles, thêm các index và RLS policies liên quan.
+20250101000001_create_task_columns.sql
 
-## 🔧 Environment Setup
+Tên phần: Tasks / Boards / Columns
+Mô tả: Tạo task_boards, task_columns, chèn board/columns mặc định, chuyển tasks.status sang text, RLS policies.
+20250101000001_fix_null_user_names_in_triggers.sql
 
-### **Supabase Configuration**
+Tên phần: Trigger fixes (null-safe notifications)
+Mô tả: Sửa hàm trigger để xử lý tên NULL trong các trigger thông báo (leave request, task assignment, room booking).
+20250101000002_add_booking_visibility_policies.sql
 
-1. Create a new project on [Supabase](https://supabase.com)
-2. Run migrations from `supabase/migrations/`
-3. Enable Row-Level Security on all tables
-4. Configure authentication providers
-5. Set up storage buckets for avatars and attachments
+Tên phần: Room booking RLS policies
+Mô tả: Thay thế/điều chỉnh các RLS policies cho room_bookings (ai được xem/tạo/cập nhật).
+20251106014315_dbec92f9-c3c1-4764-8f6f-820774dbdf1e.sql
 
-### **Development Tools**
+Tên phần: Base schema & types (users/profiles/teams/tasks/rooms/leave/audit)
+Mô tả: Tạo extension UUID, enum types, bảng teams, shifts, user_roles, profiles, attendance, tasks, task_comments, meeting_rooms, room_bookings, leave_requests, audit_logs, RLS helpers & policies, helper functions.
+20251110021336_6a5c5b02-28a8-4818-a43f-003ed3a4a252.sql
 
-```bash
-# Install development dependencies
-npm install -D @types/node typescript eslint prettier
+Tên phần: Salaries table
+Mô tả: Tạo bảng salaries, RLS policies cho admin, trigger updated_at.
+20251111023514_7e7bebc2-151d-4e74-9ff4-29cc68c13a3b.sql
 
-# Run linter
-npm run lint
+Tên phần: Notifications & avatar storage policies
+Mô tả: Tạo notifications table, functions create_notification, triggers for leave/task/booking notifications, create avatars storage bucket and related storage policies.
+20251115_add_approval_status_to_profiles.sql
 
-# Format code
-npm run format
+Tên phần: Profiles approval status (backfill)
+Mô tả: Thêm các cột approval (is_approved, approval_date, approval_rejected, rejection_reason) và index; backfill existing users as approved.
+20251115_add_attendees_to_room_bookings.sql
 
-# Type check
-npm run type-check
-```
+Tên phần: Room bookings - attendees
+Mô tả: Thêm cột attendees (array) cho room_bookings và liên quan (mở rộng chức năng đặt phòng).
+20251203143646_28e61aef-6616-4018-9bea-3303bd9747c3.sql
 
----
+Tên phần: (misc) schema changes December 03
+Mô tả: (file chứa các thay đổi/patches tháng 12; mở file để xem chi tiết trước khi chạy)
+20251225030838_87721473-71f8-4e09-b109-9c776e760c71.sql
 
-## 💻 Development
+Tên phần: (misc) schema changes Dec 25
+Mô tả: (file chứa các thay đổi; xem nội dung)
+20251226032038_b4af8fb8-a528-4e26-b79c-0d8b3e206df1.sql
 
-### **Running Tests**
+Tên phần: (misc) schema changes Dec 26
+Mô tả: (xem file)
+20251227134921_e5a637e3-afc4-42cf-b6af-db2baecdc2a2.sql
 
-```bash
-# Unit tests
-npm run test
+Tên phần: (misc) schema changes Dec 27
+Mô tả: (xem file)
+20260101064952_bd9d8460-42b2-4102-a26b-e5d98ae8495e.sql
 
-# E2E tests (Playwright)
-npm run test:e2e
+Tên phần: (misc) Jan 01 updates
+Mô tả: (xem file)
+20260102023857_42a8da23-331b-4f29-a4c2-aee57e2a32d6.sql
 
-# Load testing
-npm run test:load
-```
+Tên phần: (misc) Jan 02 updates
+Mô tả: (xem file)
+20260104002122_2866e737-d9c4-46b7-a539-db8d8d34928e.sql
 
-### **Building for Production**
+Tên phần: (misc) Jan 04 updates
+Mô tả: (xem file)
+20260106000000_create_messages.sql
 
-```bash
-npm run build
-npm run preview
-```
+Tên phần: Messaging — create conversations/participants/messages
+Mô tả: Tạo bảng conversations, conversation_participants, messages và trigger cập nhật conversations.last_message_at. (Phải chạy sau khi profiles table tồn tại — OK vì profiles được tạo ở bước 5.)
+20260106000100_enhance_messages.sql
 
----
+Tên phần: Messaging — enhancements (group flag, participant roles, edit/delete)
+Mô tả: Thêm created_by, is_group cho conversations; thêm role và uniq constraint cho conversation_participants; thêm flags edited, deleted cho messages; tạo table message_reactions.
+20260106000200_attachments_and_mute_notifications.sql
 
-## 🌐 Deployment
-
-### **Deploy to Lovable**
-
-Simply open [Lovable](https://lovable.dev/projects/f69f86c8-a387-4d19-b189-642e8f36a015) and click **Share → Publish**.
-
-### **Deploy to Vercel**
-
-```bash
-vercel deploy --prod
-```
-
-### **Custom Domain**
-
-Navigate to **Project > Settings > Domains** to connect your custom domain.
-
-📖 [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
-
----
-
-## 🎨 Design System
-
-### **Typography**
-
-- **Primary Font**: Inter - Clean and modern
-- **Secondary Font**: Source Sans 3 / Roboto - Dashboard readability
-- **Display Font**: Poppins (optional) - Brand headers
-
-### **Color Palette**
-
-#### Light Mode
-- **Primary**: `#0F62FE` (Blue)
-- **Background**: `#F7F9FC` (Light gray)
-- **Text Secondary**: `#6B7280` (Muted)
-
-#### Dark Mode
-- **Primary**: `#3B82F6` (Bright blue)
-- **Background**: `#0B1220` (Dark navy)
-- **Text Secondary**: `#94A3B8` (Light gray)
-
-### **Components**
-
-All UI components follow the design system tokens defined in `src/index.css` and use semantic color variables. Never use hardcoded colors like `text-white` or `bg-blue-500`.
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### **Coding Standards**
-
-- Follow TypeScript best practices
-- Use semantic commit messages
-- Write tests for new features
-- Update documentation as needed
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- [shadcn/ui](https://ui.shadcn.com/) for beautiful components
-- [Supabase](https://supabase.com/) for amazing backend infrastructure
-- [Lucide Icons](https://lucide.dev/) for clean iconography
-- [Framer Motion](https://www.framer.com/motion/) for smooth animations
-
----
-
-<div align="center">
-
-### 🌟 Star us on GitHub — it motivates us a lot!
-
-**Built with ❤️ by the Vine Team**
-
-[🐛 Report Bug](https://github.com/yourusername/vine-crm/issues) • [✨ Request Feature](https://github.com/yourusername/vine-crm/issues)
-
-</div>
+Tên phần: Messaging — attachments & per-conversation mute
+Mô tả: Tạo message_attachments metadata, thêm attachment_id vào messages, thêm muted flag vào conversation_participants. Lưu ý: phải tạo Supabase Storage bucket message-attachments sau/một phần trước khi upload files.
+Ghi chú quan trọng:

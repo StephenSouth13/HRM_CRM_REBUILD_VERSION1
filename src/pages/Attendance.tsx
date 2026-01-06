@@ -73,7 +73,7 @@ const Attendance = () => {
           </TabsList>
 
           <TabsContent value="attendance" className="mt-6">
-            {role === 'admin' ? (
+            {(role === 'admin' || role === 'leader') ? (
               <div className="shadow-strong rounded-lg">
                 <AdminAttendanceView />
               </div>

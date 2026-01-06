@@ -11,6 +11,13 @@ import { useToast } from "@/hooks/use-toast";
 import { format, differenceInHours, differenceInMinutes } from "date-fns";
 import { Download, Search } from "lucide-react";
 import * as XLSX from 'xlsx';
+import { getCurrentUser, getUserRole } from '@/lib/auth';
+
+const Unauthorized = () => (
+  <div className="p-8 text-center text-muted-foreground">
+    You do not have permission to view this page. Contact an administrator if you believe this is an error.
+  </div>
+);
 
 interface AttendanceRecord {
   id: string;
@@ -47,13 +54,27 @@ const AdminAttendanceView = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [stats, setStats] = useState<UserAttendanceStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string>('staff');
   const [searchName, setSearchName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
-    loadData();
+    const init = async () => {
+      const user = await getCurrentUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+      const r = await getUserRole(user.id);
+      setRole(r);
+      if (r === 'admin' || r === 'leader') {
+        await loadData();
+      }
+      setLoading(false);
+    };
+    init();
   }, []);
 
   useEffect(() => {
@@ -274,6 +295,10 @@ const AdminAttendanceView = () => {
 
   if (loading) {
     return <div className="text-muted-foreground text-center py-8">Loading attendance data...</div>;
+  }
+
+  if (!(role === 'admin' || role === 'leader')) {
+    return <Unauthorized />;
   }
 
   return (

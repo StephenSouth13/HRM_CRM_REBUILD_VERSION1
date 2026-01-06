@@ -147,7 +147,34 @@ const AttendanceWidget = () => {
     setIsLoading(true);
     try {
       const location = await getLocation();
-      
+      // prevent duplicate check-in: only insert if there's no check_in today without a corresponding check_out
+      const today = new Date().toISOString().split('T')[0];
+      const { data: todaysRecords } = await supabase
+        .from('attendance')
+        .select('*')
+        .eq('user_id', userId)
+        .gte('timestamp', `${today}T00:00:00`)
+        .lte('timestamp', `${today}T23:59:59`)
+        .order('timestamp', { ascending: true });
+
+      // find latest unmatched check_in (check_in that does not have a later check_out)
+      let hasOpenCheckIn = false;
+      for (let i = 0; i < (todaysRecords || []).length; i++) {
+        const rec = todaysRecords[i];
+        if (rec.type === 'check_in') {
+          // look for any check_out after this check_in
+          const hasOut = (todaysRecords || []).some(r => r.type === 'check_out' && new Date(r.timestamp) > new Date(rec.timestamp));
+          if (!hasOut) {
+            hasOpenCheckIn = true;
+            break;
+          }
+        }
+      }
+
+      if (hasOpenCheckIn) {
+        throw new Error('You already have an open check-in for today. Please check out before checking in again.');
+      }
+
       const { error } = await supabase
         .from('attendance')
         .insert({
@@ -163,11 +190,12 @@ const AttendanceWidget = () => {
         title: "Checked In Successfully",
         description: `Welcome! Checked in at ${format(new Date(), 'HH:mm')}`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const msg = (error as any)?.message || String(error);
       toast({
         variant: "destructive",
         title: "Check-in Failed",
-        description: error.message
+        description: msg
       });
     } finally {
       setIsLoading(false);
@@ -180,7 +208,33 @@ const AttendanceWidget = () => {
     setIsLoading(true);
     try {
       const location = await getLocation();
-      
+      // ensure there's an unmatched check_in to pair with
+      const today = new Date().toISOString().split('T')[0];
+      const { data: todaysRecords } = await supabase
+        .from('attendance')
+        .select('*')
+        .eq('user_id', userId)
+        .gte('timestamp', `${today}T00:00:00`)
+        .lte('timestamp', `${today}T23:59:59`)
+        .order('timestamp', { ascending: true });
+
+      // find latest check_in without later check_out
+      let latestOpenCheckIn: AttendanceRecord | null = null;
+      for (let i = (todaysRecords || []).length - 1; i >= 0; i--) {
+        const rec = todaysRecords[i];
+        if (rec.type === 'check_in') {
+          const hasOut = (todaysRecords || []).some(r => r.type === 'check_out' && new Date(r.timestamp) > new Date(rec.timestamp));
+          if (!hasOut) {
+            latestOpenCheckIn = rec;
+            break;
+          }
+        }
+      }
+
+      if (!latestOpenCheckIn) {
+        throw new Error('No open check-in found for today. Please check in first.');
+      }
+
       const { error } = await supabase
         .from('attendance')
         .insert({
@@ -192,27 +246,20 @@ const AttendanceWidget = () => {
 
       if (error) throw error;
 
-      // Calculate hours worked today
-      const checkInRecord = todayRecords.find(r => r.type === 'check_in');
-      if (checkInRecord) {
-        const hours = differenceInHours(new Date(), new Date(checkInRecord.timestamp));
-        const minutes = differenceInMinutes(new Date(), new Date(checkInRecord.timestamp)) % 60;
-        
-        toast({
-          title: "Checked Out Successfully",
-          description: `Great work! You worked ${hours}h ${minutes}m today`,
-        });
-      } else {
-        toast({
-          title: "Checked Out Successfully",
-          description: `See you tomorrow!`,
-        });
-      }
-    } catch (error: any) {
+      // Calculate hours worked between latestOpenCheckIn and now
+      const hours = differenceInHours(new Date(), new Date(latestOpenCheckIn.timestamp));
+      const minutes = differenceInMinutes(new Date(), new Date(latestOpenCheckIn.timestamp)) % 60;
+      
+      toast({
+        title: "Checked Out Successfully",
+        description: `Great work! You worked ${hours}h ${minutes}m today`,
+      });
+    } catch (error: unknown) {
+      const msg = (error as any)?.message || String(error);
       toast({
         variant: "destructive",
         title: "Check-out Failed",
-        description: error.message
+        description: msg
       });
     } finally {
       setIsLoading(false);

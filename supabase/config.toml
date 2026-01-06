@@ -1,4 +1,4 @@
-project_id = "tyverlryifverobjwauo"
+project_id = "arpfgeyugjvubpbcfzgn"
 
 [functions.send-salary-email]
 verify_jwt = false
